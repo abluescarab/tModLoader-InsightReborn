@@ -1,1 +1,7 @@
 ﻿Insight Reborn allows you to see the first 8 items in a chest just by mousing over it. Based on shockah's mod Insight.
+
+[Changelog]
+v1.0.1 2016-08-04
+* Fix: items in popup will now change when chests are close together
+
+v1.0.0  2016-08-04

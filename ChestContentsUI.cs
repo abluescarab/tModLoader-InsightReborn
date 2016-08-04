@@ -71,8 +71,8 @@ namespace InsightReborn {
             uiObject = background;
         }
 
-        public void SetItems(int chest) {
-            Item[] items = Main.chest[chest].item.Where(i => i.stack > 0).ToArray();
+        public void SetItems(Chest chest) {
+            Item[] items = chest.item.Where(i => i.stack > 0).ToArray();
             
             for(int i = 0; i < maxSlots; i++) {
                 if(items.Length < (i + 1)) {

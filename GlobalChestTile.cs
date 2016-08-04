@@ -3,6 +3,8 @@ using Terraria.ModLoader;
 
 namespace InsightReborn {
     public class GlobalChestTile : GlobalTile {
+        private static Chest lastChest;
+
         public override bool Autoload(ref string name) {
             return true;
         }
@@ -14,10 +16,14 @@ namespace InsightReborn {
 
         public override void MouseOverFar(int i, int j, int type) {
             if(TileLoader.IsChest(type)) {
-                if(!InsightReborn.ChestContents.Open) {
-                    InsightReborn.ChestContents.SetItems(GetChest(i, j, type));
-                    InsightReborn.ChestContents.Open = true;
+                Chest chest = Main.chest[GetChest(i, j, type)];
+
+                if(chest != lastChest) {
+                    InsightReborn.ChestContents.SetItems(chest);
                 }
+
+                lastChest = chest;
+                InsightReborn.ChestContents.Open = true;
             }
             else {
                 InsightReborn.ChestContents.Open = false;
