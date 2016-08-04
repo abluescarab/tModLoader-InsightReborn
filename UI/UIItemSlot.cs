@@ -94,8 +94,19 @@ namespace InsightReborn.UI {
                     drawItem(sb, this);
                 }
                 else {
-                    Vector2 origin = new Vector2(Main.itemTexture[this.item.type].Width / 2, Main.itemTexture[this.item.type].Height / 2);
-                    sb.Draw(Main.itemTexture[this.item.type], new Vector2(this.rectangle.X + this.rectangle.Width / 2, this.rectangle.Y + this.rectangle.Height / 2), null, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
+                    Vector2 origin = new Vector2(Main.itemTexture[this.item.type].Width / 2, 
+                        Main.itemTexture[this.item.type].Height / 2);
+
+                    sb.Draw(Main.itemTexture[this.item.type],
+                                              new Vector2(this.rectangle.X + this.rectangle.Width / 2,
+                                                          this.rectangle.Y + this.rectangle.Height / 2),
+                                              null,
+                                              Color.White,
+                                              0f,
+                                              origin,
+                                              1f,
+                                              SpriteEffects.None,
+                                              0f);
                 }
             }
             if(postDrawItem != null) {
