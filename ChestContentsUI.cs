@@ -28,7 +28,7 @@ namespace InsightReborn {
             SlotWidth = slotWidth;
             SlotHeight = slotHeight;
             SlotMargin = slotMargin;
-
+            
             Initialize();
         }
 
@@ -49,10 +49,27 @@ namespace InsightReborn {
 
             for(int i = 1; i <= maxSlots; i++) {
                 UIItemSlot slot = new UIItemSlot(
-                    new Vector2(slotX, slotY),
-                    background,
-                    delegate (Item item) {
+                    pos: new Vector2(slotX, slotY),
+                    parent: background,
+                    con: delegate(Item item) {
                         return false;
+                    },
+                    pdi: delegate(SpriteBatch spriteBatch, UIItemSlot itemSlot) {
+                        if(itemSlot.item.stack > 1) {
+                            string stack = itemSlot.item.stack.ToString();
+                            SpriteFont font = Main.fontItemStack;
+                            Vector2 textSize = font.MeasureString(stack);
+                            float textW = textSize.X;
+                            float textH = textSize.Y;
+
+                            spriteBatch.DrawString(
+                                font,
+                                stack,
+                                new Vector2(
+                                    itemSlot.rectangle.X + (itemSlot.rectangle.Width / 2) - (textW / 2),
+                                    itemSlot.rectangle.Y + itemSlot.rectangle.Height - textH + (textH / 3)),
+                                Color.White);
+                        }
                     });
 
                 slots.Add(slot);
@@ -73,7 +90,7 @@ namespace InsightReborn {
 
         public void SetItems(Chest chest) {
             Item[] items = chest.item.Where(i => i.stack > 0).ToArray();
-            
+
             for(int i = 0; i < maxSlots; i++) {
                 if(items.Length < (i + 1)) {
                     slots[i].item = new Item();
@@ -83,7 +100,7 @@ namespace InsightReborn {
                 }
             }
         }
-        
+
         public void Draw(SpriteBatch spriteBatch) {
             MouseState state = Mouse.GetState();
             uiObject.position.X = state.X + PopupOffset.X;
