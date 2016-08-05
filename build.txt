@@ -1,6 +1,6 @@
 ﻿displayName=Insight Reborn
-author=abluescarab, shockah
-version=1.0.1
+author=abluescarab, shockah, Boffin
+version=1.0.2
 dllReferences=
 modReferences=
 noCompile=false

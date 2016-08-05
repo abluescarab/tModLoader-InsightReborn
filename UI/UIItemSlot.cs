@@ -94,19 +94,26 @@ namespace InsightReborn.UI {
                     drawItem(sb, this);
                 }
                 else {
-                    Vector2 origin = new Vector2(Main.itemTexture[this.item.type].Width / 2, 
-                        Main.itemTexture[this.item.type].Height / 2);
-
-                    sb.Draw(Main.itemTexture[this.item.type],
-                                              new Vector2(this.rectangle.X + this.rectangle.Width / 2,
-                                                          this.rectangle.Y + this.rectangle.Height / 2),
-                                              null,
-                                              Color.White,
-                                              0f,
-                                              origin,
-                                              1f,
-                                              SpriteEffects.None,
-                                              0f);
+                    Texture2D texture2D = Main.itemTexture[this.item.type];
+                    Rectangle rectangle2;
+                    if(Main.itemAnimations[item.type] != null) {
+                        rectangle2 = Main.itemAnimations[item.type].GetFrame(texture2D);
+                    }
+                    else {
+                        rectangle2 = texture2D.Frame(1, 1, 0, 0);
+                    }
+                    Vector2 origin = new Vector2(rectangle2.Width / 2, rectangle2.Height / 2);
+                    sb.Draw(
+                        Main.itemTexture[this.item.type],
+                        new Vector2(this.rectangle.X + this.rectangle.Width / 2,
+                                    this.rectangle.Y + this.rectangle.Height / 2),
+                        new Rectangle?(rectangle2),
+                        Color.White,
+                        0f,
+                        origin,
+                        1f,
+                        SpriteEffects.None,
+                        0f);
                 }
             }
             if(postDrawItem != null) {
