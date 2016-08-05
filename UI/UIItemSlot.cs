@@ -26,7 +26,7 @@ namespace InsightReborn.UI {
         //Delegates, voids
         public delegate void DrawInItemSlot(SpriteBatch sb, UIItemSlot obj);
         public delegate bool Condition(Item item);
-
+        
         public UIItemSlot(Vector2 pos, UIObject parent = null, Condition con = null, DrawInItemSlot db = null, DrawInItemSlot di = null, DrawInItemSlot pdi = null, bool drawAsNormalItemSlot = false, int contextForItemSlot = 1)
             : base(pos, new Vector2(52), parent) {
             this.item = new Item();
@@ -51,6 +51,7 @@ namespace InsightReborn.UI {
 
             this.contextForItemSlot = contextForItemSlot;
         }
+
         public void Handle() {
             if(Main.mouseLeftRelease && Main.mouseLeft) {
                 ItemSlot.LeftClick(ref this.item, 0);
@@ -60,6 +61,8 @@ namespace InsightReborn.UI {
                 ItemSlot.RightClick(ref this.item, 0);
             }
         }
+
+
         public override void Draw(SpriteBatch sb) {
             Vector2 position = this.position;
             if(parent != null) {
