@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-
 using Terraria;
-using Terraria.ID;
+using Terraria.GameInput;
 using Terraria.ModLoader;
-using Terraria.DataStructures;
 using Terraria.UI;
 
 namespace InsightReborn.UI {
@@ -20,57 +13,84 @@ namespace InsightReborn.UI {
         public DrawInItemSlot drawBack;
         public DrawInItemSlot drawItem;
         public DrawInItemSlot postDrawItem;
+        public LeftClick leftClick;
+        public RightClick rightClick;
         public bool drawAsNormalItemSlot;
         public int contextForItemSlot;
 
         //Delegates, voids
         public delegate void DrawInItemSlot(SpriteBatch sb, UIItemSlot obj);
         public delegate bool Condition(Item item);
-        
-        public UIItemSlot(Vector2 pos, UIObject parent = null, Condition con = null, DrawInItemSlot db = null, DrawInItemSlot di = null, DrawInItemSlot pdi = null, bool drawAsNormalItemSlot = false, int contextForItemSlot = 1)
-            : base(pos, new Vector2(52), parent) {
+        public delegate bool LeftClick(UIItemSlot slot);
+        public delegate bool RightClick(UIItemSlot slot);
+
+        /// <summary>
+        /// Create a new UIItemSlot.
+        /// </summary>
+        /// <param name="position">Position of the slot (px). If parent is not null, position is added to parent position.</param>
+        /// <param name="size">Size of the slot</param>
+        /// <param name="parent">Parent UIObject</param>
+        /// <param name="condition">Condition checked before item is placed in slot. If null, all items are permitted.</param>
+        /// <param name="drawBackground">Method run when slot background is drawn. If null, slot is drawn with default background texture.</param>
+        /// <param name="drawItem">Method run when item in slot is drawn. If null, item is drawn in center of slot.</param>
+        /// <param name="postDrawItem">Method run after item in slot is drawn. Use to draw elements over the item.</param>
+        /// <param name="leftClick">Method run when slot is left clicked. Leave null for default behavior.</param>
+        /// <param name="rightClick">Method run when slot is right clicked. Leave null for default behavior.</param>
+        /// <param name="drawAsNormalItemSlot">Draw as an inventory ItemSlot.</param>
+        /// <param name="contextForItemSlot">Context for slot if drawAsNormalItemSlot is true.</param>
+        public UIItemSlot(Vector2 position, int size = 52, UIObject parent = null, Condition condition = null,
+            DrawInItemSlot drawBackground = null, DrawInItemSlot drawItem = null, DrawInItemSlot postDrawItem = null,
+            LeftClick leftClick = null, RightClick rightClick = null, bool drawAsNormalItemSlot = false,
+            int contextForItemSlot = 1) : base(position, new Vector2(size), parent) {
             this.item = new Item();
-
-            this.conditions = con;
-
-            this.size = new Vector2(52);
-            //If you want to change the size of the item slot you can change it here or by changing it in your UIWindow file :)
-            //The size is 52 by 52 as that is the size of InventoryBackTexture, you can change it to your own however.
-
-            this.drawBack = db;
-            //This is called when the background is to be drawn. Leave as null to use default draw.
-
-            this.drawItem = di;
-            //This is called when the item is drawn. It might be good to leave this null, or copy and paste the default code to change the origin.
-
-            this.postDrawItem = pdi;
-            //This is called after the item is drawn. Used to draw other things, such as the item tooltip.
-            //To draw the item tooltip, use UIParameters.mousePos + Vector2(12) as your starting position for the text :)
-
+            this.conditions = condition;
+            this.drawBack = drawBackground;
+            this.drawItem = drawItem;
+            this.postDrawItem = postDrawItem;
+            this.leftClick = leftClick;
+            this.rightClick = rightClick;
             this.drawAsNormalItemSlot = drawAsNormalItemSlot;
-
             this.contextForItemSlot = contextForItemSlot;
         }
 
+        /// <summary>
+        /// Handle the mouse click events.
+        /// </summary>
+        /// <returns>bool specified by custom click handler</returns>
         public void Handle() {
             if(Main.mouseLeftRelease && Main.mouseLeft) {
-                ItemSlot.LeftClick(ref this.item, 0);
-                Recipe.FindRecipes();
+                if(leftClick == null) {
+                    ItemSlot.LeftClick(ref this.item, 0);
+                    Recipe.FindRecipes();
+                }
+                else {
+                    leftClick(this);
+                    Main.mouseLeftRelease = false; // prevent repeat
+                }
             }
-            else {
-                ItemSlot.RightClick(ref this.item, 0);
+            else if(Main.mouseRight && Main.mouseRightRelease) {
+                if(rightClick == null) {
+                    ItemSlot.RightClick(ref this.item, 0);
+                }
+                else {
+                    rightClick(this);
+                    Main.mouseRightRelease = false; // prevent repeat
+                }
             }
         }
 
-
         public override void Draw(SpriteBatch sb) {
             Vector2 position = this.position;
+            Point mouse = new Point(Main.mouseX, Main.mouseY);
+
             if(parent != null) {
                 position += this.parent.position;
             }
+
             this.rectangle = new Rectangle((int)position.X, (int)position.Y, (int)this.size.X, (int)this.size.Y);
-            Main.player[Main.myPlayer].mouseInterface = true;
-            if(new Rectangle(Main.mouseX, Main.mouseY, 1, 1).Intersects(this.rectangle)) {
+
+            if(this.rectangle.Contains(mouse) && !PlayerInput.IgnoreMouseInterface) {
+                Main.player[Main.myPlayer].mouseInterface = true;
                 if(this.conditions != null) {
                     if(this.conditions(Main.mouseItem)) {
                         Handle();
@@ -80,7 +100,9 @@ namespace InsightReborn.UI {
                     Handle();
                 }
             }
+
             Mod mod = ModLoader.GetMod(UIParameters.MODNAME);
+
             if(drawAsNormalItemSlot) {
                 ItemSlot.Draw(sb, ref this.item, contextForItemSlot, this.position);
             }
@@ -89,9 +111,10 @@ namespace InsightReborn.UI {
                     drawBack(sb, this);
                 }
                 else {
-                    sb.Draw(Main.inventoryBackTexture, this.rectangle, Color.White); //Draws as default texture.
+                    sb.Draw(Main.inventoryBackTexture, this.rectangle, Color.White); // Draws as default texture.
                 }
             }
+
             if(this.item.type > 0) {
                 if(drawItem != null) {
                     drawItem(sb, this);
@@ -106,11 +129,9 @@ namespace InsightReborn.UI {
                         rectangle2 = texture2D.Frame(1, 1, 0, 0);
                     }
                     Vector2 origin = new Vector2(rectangle2.Width / 2, rectangle2.Height / 2);
-                    sb.Draw(
-                        Main.itemTexture[this.item.type],
-                        new Vector2(this.rectangle.X + this.rectangle.Width / 2,
-                                    this.rectangle.Y + this.rectangle.Height / 2),
-                        new Rectangle?(rectangle2),
+                    sb.Draw(Main.itemTexture[this.item.type],
+                        new Vector2(this.rectangle.X + this.rectangle.Width / 2, this.rectangle.Y + this.rectangle.Height / 2),
+                        new Rectangle?(rectangle2), //Big thanks to Abluescarab for this! :D
                         Color.White,
                         0f,
                         origin,
@@ -119,9 +140,11 @@ namespace InsightReborn.UI {
                         0f);
                 }
             }
+
             if(postDrawItem != null) {
                 postDrawItem(sb, this);
             }
+
             base.Draw(sb);
         }
     }
