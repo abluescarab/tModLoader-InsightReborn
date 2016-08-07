@@ -49,12 +49,12 @@ namespace InsightReborn {
 
             for(int i = 1; i <= maxSlots; i++) {
                 UIItemSlot slot = new UIItemSlot(
-                    pos: new Vector2(slotX, slotY),
+                    position: new Vector2(slotX, slotY),
                     parent: background,
-                    con: delegate(Item item) {
+                    condition: delegate(Item item) {
                         return false;
                     },
-                    pdi: delegate(SpriteBatch spriteBatch, UIItemSlot itemSlot) {
+                    postDrawItem: delegate(SpriteBatch spriteBatch, UIItemSlot itemSlot) {
                         if(itemSlot.item.stack > 1) {
                             string stack = itemSlot.item.stack.ToString();
                             SpriteFont font = Main.fontItemStack;
