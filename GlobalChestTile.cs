@@ -1,5 +1,7 @@
-﻿using Terraria;
+﻿using System.Diagnostics;
+using Terraria;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace InsightReborn {
     public class GlobalChestTile : GlobalTile {
@@ -15,10 +17,12 @@ namespace InsightReborn {
         }
 
         public override void MouseOverFar(int i, int j, int type) {
-            if(TileLoader.IsChest(type)) {
-                Chest chest = Main.chest[GetChest(i, j, type)];
+            int chestIndex = GetChest(i, j);
 
-                if(chest != lastChest) {
+            if(chestIndex > -1) {
+                Chest chest = Main.chest[chestIndex];
+
+                if(lastChest == null || chest.x != lastChest.x || chest.y != lastChest.y) {
                     InsightReborn.ChestContents.SetItems(chest);
                 }
 
@@ -32,7 +36,7 @@ namespace InsightReborn {
             base.MouseOverFar(i, j, type);
         }
 
-        private int GetChest(int i, int j, int type) {
+        private int GetChest(int i, int j) {
             int left = i;
             int top = j;
             Tile tile = Main.tile[i, j];
