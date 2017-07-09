@@ -4,6 +4,7 @@ using InsightReborn.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ReLogic.Graphics;
 using Terraria;
 
 namespace InsightReborn {
@@ -28,7 +29,7 @@ namespace InsightReborn {
             SlotWidth = slotWidth;
             SlotHeight = slotHeight;
             SlotMargin = slotMargin;
-            
+
             Initialize();
         }
 
@@ -57,7 +58,7 @@ namespace InsightReborn {
                     postDrawItem: delegate(SpriteBatch spriteBatch, UIItemSlot itemSlot) {
                         if(itemSlot.item.stack > 1) {
                             string stack = itemSlot.item.stack.ToString();
-                            SpriteFont font = Main.fontItemStack;
+                            DynamicSpriteFont font = Main.fontItemStack;
                             Vector2 textSize = font.MeasureString(stack);
                             float textW = textSize.X;
                             float textH = textSize.Y;
