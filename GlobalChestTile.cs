@@ -1,7 +1,6 @@
-﻿using System.Diagnostics;
+﻿using ModConfiguration;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.UI;
 
 namespace InsightReborn {
     public class GlobalChestTile : GlobalTile {
@@ -17,23 +16,25 @@ namespace InsightReborn {
         }
 
         public override void MouseOverFar(int i, int j, int type) {
-            int chestIndex = GetChest(i, j);
+            bool requiresAccessory = (bool)ModConfig.GetOption(InsightReborn.REQUIRES_ACCESSORY);
 
-            if(chestIndex > -1) {
-                Chest chest = Main.chest[chestIndex];
+            if(!requiresAccessory || (requiresAccessory && Main.LocalPlayer.GetModPlayer<InsightRebornPlayer>().accXRayGoggles)) {
+                int chestIndex = GetChest(i, j);
 
-                if(lastChest == null || chest.x != lastChest.x || chest.y != lastChest.y) {
-                    InsightReborn.ChestContents.SetItems(chest);
+                if(chestIndex > -1) {
+                    Chest chest = Main.chest[chestIndex];
+
+                    if(lastChest == null || chest.x != lastChest.x || chest.y != lastChest.y) {
+                        InsightReborn.ChestContents.SetItems(chest);
+                    }
+
+                    lastChest = chest;
+                    InsightReborn.ChestContents.Open = true;
                 }
-
-                lastChest = chest;
-                InsightReborn.ChestContents.Open = true;
+                else {
+                    InsightReborn.ChestContents.Open = false;
+                }
             }
-            else {
-                InsightReborn.ChestContents.Open = false;
-            }
-
-            base.MouseOverFar(i, j, type);
         }
 
         private int GetChest(int i, int j) {
