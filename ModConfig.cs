@@ -35,28 +35,36 @@ namespace ModConfiguration {
         /// Add a new configuration option.
         /// </summary>
         public static void AddOption(string name, object defaultValue) {
-            options.Add(name, new ModOption(name, defaultValue));
+            if(!options.ContainsKey(name)) {
+                options.Add(name, new ModOption(name, defaultValue));
+            }
         }
 
         /// <summary>
         /// Add a new configuration option.
         /// </summary>
         public static void AddOption(ModOption option) {
-            options.Add(option.Name, option);
+            if(!options.ContainsKey(option.Name)) {
+                options.Add(option.Name, option);
+            }
         }
 
         /// <summary>
         /// Remove a configuration option.
         /// </summary>
         public static void RemoveOption(string name) {
-            options.Remove(name);
+            if(options.ContainsKey(name)) {
+                options.Remove(name);
+            }
         }
 
         /// <summary>
         /// Remove a configuration option.
         /// </summary>
         public static void RemoveOption(ModOption option) {
-            options.Remove(option.Name);
+            if(options.ContainsKey(option.Name)) {
+                options.Remove(option.Name);
+            }
         }
 
         /// <summary>
