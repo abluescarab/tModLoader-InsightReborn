@@ -3,6 +3,9 @@
 Now includes the X-Ray Goggles accessory! You can enable/disable needing the goggles in the mod configuration file (Documents\My Games\Terraria\ModLoader\Mod Configs\InsightReborn.json). Craft X-Ray Goggles at a workbench + chair with 2 lenses and 2 rubies.
 
 [Changelog]
+v2.0.2  2017-11-06
+* Compiled for tModLoader v0.10.1
+
 v2.0.1  2017-07-26
 * Fix: dictionary "duplicate key" error
 
