@@ -6,6 +6,9 @@ Now includes the X-Ray Goggles accessory! You can enable/disable needing the gog
 * Chest contents stay visible until another tile is moused over
 
 [Changelog]
+v2.1.1  2023-03-05
+* Fix: item textures not loading on first run
+
 v2.1.0  2023-03-04
 * Updated for tModLoader 1.4
 * Implemented tModLoader ModConfig
