@@ -1,113 +1,81 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using InsightReborn.UI;
+﻿using CustomSlot;
+using CustomSlot.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using ReLogic.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.GameContent.UI.Elements;
+using Terraria.UI;
 
 namespace InsightReborn {
-    public class ChestContentsUI {
-        private const int maxSlots = 8;
-        private const int rowCount = 2;
-        private UIObject uiObject;
-        private List<UIItemSlot> slots;
+    public class ChestContentsUI : UIState {
+        private const int MaxSlots = 8;
+        private const int RowCount = 2;
+        private const int SlotsPerRow = MaxSlots / RowCount;
 
-        public bool Open { get; set; }
-        public float Width { get; private set; }
-        public float Height { get; private set; }
-        public float SlotWidth { get; set; }
-        public float SlotHeight { get; set; }
-        public float SlotMargin { get; set; }
-        public Vector2 PopupOffset { get; set; }
+        private UIPanel panel;
+        private List<CustomItemSlot> _slots;
 
-        public ChestContentsUI(string mod, Vector2 popupOffset, float slotWidth = 52, float slotHeight = 52,
-            float slotMargin = 5) {
-            UIParameters.MODNAME = mod;
-            PopupOffset = popupOffset;
-            SlotWidth = slotWidth;
-            SlotHeight = slotHeight;
-            SlotMargin = slotMargin;
+        public bool Visible { get; set; } = false;
+        public float SlotMargin { get; set; } = 5;
+        public Vector2 PopupOffset { get; set; } = new Vector2(10, 35);
 
-            Initialize();
-        }
+        public override void OnInitialize() {
+            panel = new UIPanel();
+            float slotX = 0;
+            float slotY = 0;
+            StyleDimension slotWidth = new StyleDimension(0, 0);
+            StyleDimension slotHeight = new StyleDimension(0, 0);
 
-        private void Initialize() {
-            float slotX = SlotMargin;
-            float slotY = SlotMargin;
+            _slots = new List<CustomItemSlot>(MaxSlots);
 
-            int slotsPerRow = maxSlots / rowCount;
+            for(int i = 0; i < MaxSlots; i++) {
+                CustomItemSlot slot = new CustomItemSlot(scale: 0.75f) {
+                    BackgroundTexture = new CroppedTexture2D(TextureAssets.InventoryBack5.Value)
+                };
 
-            Width = (SlotMargin * (slotsPerRow + 1)) + (SlotWidth * slotsPerRow);
-            Height = (SlotMargin * (rowCount + 1)) + (SlotHeight * rowCount);
-            float locX = (Main.screenWidth / 2) - (Width / 2);
-            float locY = (Main.screenHeight / 2) - (Height / 2);
+                slot.Left.Set(slotX, 0);
+                slot.Top.Set(slotY, 0);
 
-            UIPanel background = new UIPanel(new Vector2(locX, locY), new Vector2(Width, Height), transparent: true);
+                slotWidth = slot.Width;
+                slotHeight = slot.Height;
 
-            slots = new List<UIItemSlot>(maxSlots);
+                _slots.Add(slot);
+                panel.Append(slot);
 
-            for(int i = 1; i <= maxSlots; i++) {
-                UIItemSlot slot = new UIItemSlot(
-                    position: new Vector2(slotX, slotY),
-                    parent: background,
-                    condition: delegate(Item item) {
-                        return false;
-                    },
-                    postDrawItem: delegate(SpriteBatch spriteBatch, UIItemSlot itemSlot) {
-                        if(itemSlot.item.stack > 1) {
-                            string stack = itemSlot.item.stack.ToString();
-                            DynamicSpriteFont font = Main.fontItemStack;
-                            Vector2 textSize = font.MeasureString(stack);
-                            float textW = textSize.X;
-                            float textH = textSize.Y;
-
-                            spriteBatch.DrawString(
-                                font,
-                                stack,
-                                new Vector2(
-                                    itemSlot.rectangle.X + (itemSlot.rectangle.Width / 2) - (textW / 2),
-                                    itemSlot.rectangle.Y + itemSlot.rectangle.Height - textH + (textH / 3)),
-                                Color.White);
-                        }
-                    });
-
-                slots.Add(slot);
-
-                if(i % (maxSlots / rowCount) == 0) {
-                    slotX = SlotMargin;
-                    slotY += (SlotHeight + SlotMargin);
+                if((i + 1) % SlotsPerRow == 0) {
+                    slotX = 0;
+                    slotY += (slotHeight.Pixels + SlotMargin);
                 }
                 else {
-                    slotX += (SlotWidth + SlotMargin);
+                    slotX += (slotWidth.Pixels + SlotMargin);
                 }
-
-                background.children.Add(slot);
             }
 
-            uiObject = background;
+            panel.Width.Set(SlotsPerRow * (slotWidth.Pixels + SlotMargin) + (SlotMargin * 4), 0);
+            panel.Height.Set(RowCount * (slotHeight.Pixels + SlotMargin) + (SlotMargin * 4), 0);
+
+            Append(panel);
         }
 
         public void SetItems(Chest chest) {
             Item[] items = chest.item.Where(i => i.stack > 0).ToArray();
 
-            for(int i = 0; i < maxSlots; i++) {
+            for(int i = 0; i < MaxSlots; i++) {
                 if(items.Length < (i + 1)) {
-                    slots[i].item = new Item();
+                    _slots[i].SetItem(new Item());
                 }
                 else {
-                    slots[i].item = items[i];
+                    _slots[i].SetItem(items[i]);
                 }
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch) {
-            MouseState state = Mouse.GetState();
-            uiObject.position.X = state.X + PopupOffset.X;
-            uiObject.position.Y = state.Y + PopupOffset.Y;
-
-            uiObject.Draw(spriteBatch);
+        protected override void DrawSelf(SpriteBatch spriteBatch) {
+            panel.Left.Set(Main.MouseScreen.X + PopupOffset.X, 0);
+            panel.Top.Set(Main.MouseScreen.Y + PopupOffset.Y, 0);
         }
     }
 }

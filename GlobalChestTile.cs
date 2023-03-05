@@ -1,39 +1,26 @@
-﻿using ModConfiguration;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 
 namespace InsightReborn {
     public class GlobalChestTile : GlobalTile {
-        private static Chest lastChest;
-
-        public override bool Autoload(ref string name) {
-            return true;
-        }
-
         public override void MouseOver(int i, int j, int type) {
-            InsightReborn.ChestContents.Open = false;
+            InsightRebornSystem.UI.Visible = false;
             base.MouseOver(i, j, type);
         }
 
         public override void MouseOverFar(int i, int j, int type) {
-            bool requiresAccessory = (bool)ModConfig.GetOption(InsightReborn.REQUIRES_ACCESSORY);
+            if(InsightRebornConfig.Instance.RequiresGoggles && !Main.LocalPlayer.GetModPlayer<InsightRebornPlayer>().accXRayGoggles)
+                return;
 
-            if(!requiresAccessory || (requiresAccessory && Main.LocalPlayer.GetModPlayer<InsightRebornPlayer>().accXRayGoggles)) {
-                int chestIndex = GetChest(i, j);
-
-                if(chestIndex > -1) {
-                    Chest chest = Main.chest[chestIndex];
-
-                    if(lastChest == null || chest.x != lastChest.x || chest.y != lastChest.y) {
-                        InsightReborn.ChestContents.SetItems(chest);
-                    }
-
-                    lastChest = chest;
-                    InsightReborn.ChestContents.Open = true;
-                }
-                else {
-                    InsightReborn.ChestContents.Open = false;
-                }
+            int chestIndex = GetChest(i, j);
+            
+            if(chestIndex > -1) {
+                Chest chest = Main.chest[chestIndex];
+                InsightRebornSystem.UI.SetItems(chest);
+                InsightRebornSystem.UI.Visible = true;
+            }
+            else {
+                InsightRebornSystem.UI.Visible = false;
             }
         }
 
@@ -42,10 +29,11 @@ namespace InsightReborn {
             int top = j;
             Tile tile = Main.tile[i, j];
 
-            if(tile.frameX % 36 != 0) {
+            if(tile.TileFrameX % 36 != 0) {
                 left--;
             }
-            if(tile.frameY != 0) {
+
+            if(tile.TileFrameY != 0) {
                 top--;
             }
 

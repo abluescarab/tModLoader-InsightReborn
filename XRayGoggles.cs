@@ -10,9 +10,9 @@ namespace InsightReborn {
         }
 
         public override void SetDefaults() {
-            item.value = Item.sellPrice(0, 0, 50, 0);
-            item.rare = 1;
-            item.accessory = true;
+            Item.value = Item.sellPrice(0, 0, 50, 0);
+            Item.rare = ItemRarityID.Blue;
+            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual) {
@@ -20,13 +20,12 @@ namespace InsightReborn {
         }
 
         public override void AddRecipes() {
-            ModRecipe recipe = new ModRecipe(mod);
+            Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.Lens, 2);
             recipe.AddIngredient(ItemID.Ruby, 2);
             recipe.AddTile(TileID.Chairs);
             recipe.AddTile(TileID.WorkBenches);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            recipe.Register();
         }
     }
 }

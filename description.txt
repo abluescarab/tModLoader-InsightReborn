@@ -1,8 +1,15 @@
 ﻿Insight Reborn allows you to see the first 8 items in a chest just by mousing over it. Based on shockah's mod Insight.
 
-Now includes the X-Ray Goggles accessory! You can enable/disable needing the goggles in the mod configuration file (Documents\My Games\Terraria\ModLoader\Mod Configs\InsightReborn.json). Craft X-Ray Goggles at a workbench + chair with 2 lenses and 2 rubies.
+Now includes the X-Ray Goggles accessory! You can enable/disable needing the goggles in the mod configuration. Craft X-Ray Goggles at a workbench + chair with 2 lenses and 2 rubies.
+
+[Known Issues]
+* Chest contents stay visible until another tile is moused over
 
 [Changelog]
+v2.1.0  2023-03-04
+* Updated for tModLoader 1.4
+* Implemented tModLoader ModConfig
+
 v2.0.3  2019-08-17
 * Build for tModLoader v0.11.4
 
