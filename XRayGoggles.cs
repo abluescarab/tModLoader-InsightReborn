@@ -4,11 +4,6 @@ using Terraria.ModLoader;
 
 namespace InsightReborn {
     public class XRayGoggles : ModItem {
-        public override void SetStaticDefaults() {
-            DisplayName.SetDefault("X-Ray Goggles");
-            Tooltip.SetDefault("Shows the contents of chests from far away");
-        }
-
         public override void SetDefaults() {
             Item.value = Item.sellPrice(0, 0, 50, 0);
             Item.rare = ItemRarityID.Blue;

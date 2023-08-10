@@ -1,0 +1,21 @@
+Mods: {
+	InsightReborn: {
+		Items: {
+			XRayGoggles: {
+				DisplayName: X-Ray Goggles
+				Tooltip: Shows the contents of chests from far away
+			}
+		}
+
+		Configs: {
+			InsightRebornConfig: {
+				DisplayName: Insight Reborn Options
+
+				RequiresGoggles: {
+					Label: Require goggles accessory
+					Tooltip: ""
+				}
+			}
+		}
+	}
+}

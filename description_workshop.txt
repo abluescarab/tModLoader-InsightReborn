@@ -2,10 +2,10 @@
 
 Now includes the X-Ray Goggles accessory! You can enable/disable needing the goggles in the mod configuration. Craft X-Ray Goggles at a workbench + chair with 2 lenses and 2 rubies.
 
-[Known Issues]
+[b]Known Issues[/b]
 * Chest contents stay visible until another tile is moused over
 
-[Changelog]
+[b]Changelog[/b]
 v2.1.2  2023-08-09
 * Updated for tModLoader v1.4.4
 

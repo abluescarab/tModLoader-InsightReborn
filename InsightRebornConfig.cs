@@ -8,7 +8,6 @@ namespace InsightReborn {
         public static InsightRebornConfig Instance;
 
         [DefaultValue(true)]
-        [Label("Require goggles accessory")]
         public bool RequiresGoggles;
     }
 }
